@@ -3,29 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 
 /*
-* SQUARE
-class Square extends React.Component {
-  constructor(props)
-  {
-  	super(props);
-  }
-
-  render()
-  {
-    return (
-      <button
-      	className="square"
-      	onClick={ () => this.props.onClick() }
-      >
-        { this.props.value }
-      </button>
-    );
-  }
-}
-*/
-
-/*
-Rendler only component.
+Render only React component can be simplified into a single function.
 */
 function Square(props)
 {
@@ -41,6 +19,9 @@ function Square(props)
 */
 class Board extends React.Component
 {
+	/*
+  	* Built-in React.
+  	*/
 	constructor(props)
 	{
 		super(props);
@@ -48,30 +29,65 @@ class Board extends React.Component
 		this.state =
 		{
 			squares: Array(9).fill(null),
+			xIsNext: true,
 		};
 	}
 
- 	handleClick(i)
+	/*
+	* Click event on squares.
+	*/
+ 	handleClickOnSquare(i)
  	{
+ 		// Get a Copy.
   		const squares = this.state.squares.slice();
-  		squares[i] = 'X';
-  		this.setState( {squares: squares} );
+
+  		if (checkIfWinner(squares)
+  			|| squares[i])
+  		{
+  			// Ignore method call if there is already a winner.
+  			return;
+  		}
+
+  		squares[i] = (this.state.xIsNext ? 'X' : 'O');
+
+  		this.setState( {
+  			squares: squares,
+  			xIsNext: !this.state.xIsNext,
+  		} );
   	}
+
 
 	renderSquare(i)
 	{
 		return (
 			<Square
 				value={ this.state.squares[i] }
-				onClick={ () => this.handleClick(i) } 
+				onClick={ () => this.handleClickOnSquare(i) } 
 			/>
 		);
 	}
 
+  	/*
+  	* Built-in React.
+  	*/
 	render()
 	{
-		const status = 'Next player: X';
+		const winner = checkIfWinner(this.state.squares);
 
+		let status;
+
+		if (winner)
+		{
+			status = winner
+				+ ' have won.';
+		}
+		else
+		{
+			status = 'Next player: '
+				+ (this.state.xIsNext ? 'X' : 'O');
+		}
+
+		// Board Display.
 		return (
 	    	<div>
 	        	<div className="status">{status}</div>
@@ -98,20 +114,49 @@ class Board extends React.Component
 
 class Game extends React.Component
 {
-  render()
-  {
-    return (
-      <div className="game">
-        <div className="game-board">
-          <Board />
-        </div>
-        <div className="game-info">
-          <div>{/* status */}</div>
-          <ol>{/* TODO */}</ol>
-        </div>
-      </div>
-    );
-  }
+    /*
+	* Built-in React.
+	*/
+	render()
+	{
+	    return (
+	      <div className="game">
+	        <div className="game-board">
+	        	<Board />
+	        </div>
+	        <div className="game-info">
+	        	<div>{/* status */}</div>
+	        	<ol>{/* TODO */}</ol>
+	        </div>
+	      </div>
+	    );
+	}
+}
+
+function checkIfWinner(squares)
+{
+	const lines = [
+    	[0, 1, 2],
+    	[3, 4, 5],
+	    [6, 7, 8],
+	    [0, 3, 6],
+	    [1, 4, 7],
+	    [2, 5, 8],
+	    [0, 4, 8],
+	    [2, 4, 6],
+  	];
+
+	for (let i = 0; i < lines.length; i++)
+	{
+    	const [a, b, c] = lines[i];
+	  	if (squares[a]
+	  		&& squares[a] === squares[b]
+	  		&& squares[a] === squares[c]) 
+	  	{
+	     	return squares[a];
+	    }
+	}
+	return null;
 }
 
 // ========================================
