@@ -84,6 +84,12 @@ class Game extends React.Component
 			return;
 		}
 
+		// Cancel methods if the square was already played.
+		if (squares[i])
+		{
+			return;
+		}
+
 		// Update square state, i.e. player action.
 		squares[i] = (this.state.xIsNext ? 'X' : 'O');
 
