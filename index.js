@@ -133,6 +133,7 @@ class Game extends React.Component
 	}
 }
 
+// Tool
 function checkIfWinner(squares)
 {
 	const lines = [
